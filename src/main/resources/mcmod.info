@@ -1,0 +1,16 @@
+[
+{
+  "modid": "playerskins",
+  "name": "Player Skin Mobs",
+  "description": "Adds a mob that has other players skins.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["GenDeathrow"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

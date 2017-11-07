@@ -8,9 +8,9 @@ import java.util.Map;
 
 import com.gendeathrow.playerskins.core.ConfigHandler;
 import com.gendeathrow.playerskins.core.PlayerSkinsCore;
+import com.gendeathrow.playerskins.data.PlayerSkinData;
 import com.gendeathrow.playerskins.entity.EntityPlayerMob;
 import com.gendeathrow.playerskins.handlers.PlayerManager;
-import com.gendeathrow.playerskins.handlers.PlayerSkinData;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
@@ -75,14 +75,14 @@ public class PlayerSkinManager
 
 						boolean uuidWasEmpty = false;
 						
-						if(raider.getProfile().getId() == null)
-							uuidWasEmpty = true;
+//						if(raider.getProfile().getId() == null)
+//							uuidWasEmpty = true;
 						
 						raider.setProfile(TileEntitySkull.updateGameprofile(raider.getProfile()));
 						
-						// If UUID was empty than make raiders to update
-						if(uuidWasEmpty && raider.getProfile().getId() != null)
-							PlayerManager.markDirty();
+//						// If UUID was empty than make raiders to update
+//						if(uuidWasEmpty && raider.getProfile().getId() != null)
+//							PlayerManager.markDirty();
 
 						raider.setProfileUpdated();
 						

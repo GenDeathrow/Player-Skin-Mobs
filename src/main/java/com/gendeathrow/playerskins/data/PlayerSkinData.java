@@ -1,4 +1,4 @@
-package com.gendeathrow.playerskins.handlers;
+package com.gendeathrow.playerskins.data;
 
 import com.mojang.authlib.GameProfile;
 

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,8 @@ import org.apache.commons.io.IOUtils;
 
 import com.gendeathrow.playerskins.core.ConfigHandler;
 import com.gendeathrow.playerskins.core.PlayerSkinsCore;
+import com.gendeathrow.playerskins.data.LootItem;
+import com.gendeathrow.playerskins.data.PlayerSkinData;
 import com.gendeathrow.playerskins.utils.Tools;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -27,6 +30,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.WeightedRandom;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -36,7 +44,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class PlayerManager 
 {
 	public static final HashMap<String, PlayerSkinData> playersList = new HashMap<String, PlayerSkinData>();
-	//public static List<RaiderData> raiderWeighted = Lists.<RaiderData>newArrayList();
 	
 	public static final File playerSkinFile = new File(ConfigHandler.configDir, "skins.json");
 	
@@ -45,7 +52,6 @@ public class PlayerManager
 	public static final Random rand = new Random();
 	
 	private static boolean markDirty = false;
-	
 	
 	
 	public static void markDirty()
@@ -72,7 +78,7 @@ public class PlayerManager
 	}
 	
 	// Common call / clientside mainly
-	public static GameProfile getPlayerSkinProfile(String ownerName)
+	public static GameProfile getAddPlayerSkinProfile(String ownerName)
 	{
 		if(playersList.containsKey(ownerName))
 		{
@@ -84,6 +90,12 @@ public class PlayerManager
 			
 			return playersList.get(ownerName).getProfile();
 		}
+	}
+	
+	
+	
+	public static PlayerSkinData getPlayerSkinProfile(String ownerName) {
+		return playersList.get(ownerName);
 	}
 	
 	
@@ -114,6 +126,29 @@ public class PlayerManager
 			markDirty = true;
 		}
 	}
+	
+	
+	
+	private static void addNewPlayer(String ownerName, int weight, ItemStack... stacks)
+	{
+		
+		if(!playersList.containsKey(ownerName)){
+			 PlayerSkinData playerskin = new PlayerSkinData(new GameProfile(null, ownerName), weight);
+			 
+			playersList.put(ownerName, playerskin);
+			 
+			 ArrayList<LootItem> drops = new ArrayList<LootItem>();
+			 
+			 for(ItemStack stack : stacks)
+				 if(stack != null && !stack.isEmpty())
+					 drops.add(new LootItem(stack));
+			 
+			 
+			 if(!drops.isEmpty())
+				 SpecialLootManager.addNewSpecial(playerskin, drops);
+		}
+	}
+	
 
 	public static void removePlayerSkin(String ownerName)
 	{
@@ -130,8 +165,6 @@ public class PlayerManager
 		}
 	}
 	
-
-	
 	public static void readPlayerSkinFile()
 	{
 		 getTwitchSubscribers();
@@ -141,7 +174,8 @@ public class PlayerManager
 	            try
 	            {
 	                playersList.clear();
-
+	                SpecialLootManager.clearLootTable();
+	                
 	                playersList.putAll(parseJson(FileUtils.readFileToString(playerSkinFile)));
                 
 	                
@@ -156,7 +190,10 @@ public class PlayerManager
 	            	PlayerSkinsCore.logger.error((String)("Couldn\'t parse Player Skin file " + playerSkinFile), (Throwable)jsonparseexception);
 	            }
 	        }
-	        else savePlayerSkinFile();
+	        else {
+	        	loadDefaults();
+	        	savePlayerSkinFile();
+	        }
 	}
 
 	public static void savePlayerSkinFile()
@@ -202,30 +239,26 @@ public class PlayerManager
 
 	                if (playerOwner != null)
 	                {
-	                	JsonObject playerData = entry.getValue().getAsJsonObject();
+	                	JsonObject playerJson = entry.getValue().getAsJsonObject();
 	                	
 	                	int weight = 10;
 	                	
 	                	UUID uuid = null;
 	                	GameProfile playerProfile;
 	                	
-	                	if(playerData.has("weight"))
-	                		weight = playerData.get("weight").getAsInt();
+	                	if(playerJson.has("weight"))
+	                		weight = playerJson.get("weight").getAsInt();
 	                	
-	                	playerData.remove("uuid");
+	                	playerJson.remove("uuid");
 
-//	                	if(playerData.has("uuid")) {
-//	                		uuid = UUID.fromString(playerData.get("uuid").getAsString());
-//	                		playerProfile = new GameProfile(uuid, null);
-//	                	}
-//	                	else 
-	                		playerProfile = new GameProfile(null, playerOwner);
+                		playerProfile = new GameProfile(null, playerOwner);
 	                	
+	                	PlayerSkinData skinData = new PlayerSkinData(playerProfile, weight);
 	                	
-	                	PlayerSkinData raiderData = new PlayerSkinData(playerProfile, weight);
-	                	
-	                	if(!map.containsKey(playerOwner))
-	                		map.put(playerOwner, raiderData);
+	                	if(!map.containsKey(playerOwner)) {
+	                		map.put(playerOwner, skinData);
+	                		SpecialLootManager.readJsonItemDrops(skinData, playerJson);
+	                	}
 	                	else
 	                		PlayerSkinsCore.logger.warn("Player Skin already exist in " + playerSkinFile + ":" + (String)entry.getKey());
 	                }
@@ -254,7 +287,8 @@ public class PlayerManager
 //	                	jsonobject1.addProperty("uuid", entry.getValue().getProfile().getId().toString());
 	                
 	                jsonobject1.addProperty("weight", (Number)Integer.valueOf(entry.getValue().itemWeight));
-	                
+	               
+	                SpecialLootManager.writeJsonItemDrops(((PlayerSkinData)entry.getValue()), jsonobject1);
 	                
 	                jsonobject.add(((String)entry.getKey()), jsonobject1);
 	            }
@@ -321,10 +355,23 @@ public class PlayerManager
 		}
 	}
 
-	static
+	public static void loadDefaults()
 	{
 		//cool kids
-		playersList.put("Gen_Deathrow", new PlayerSkinData(new GameProfile(UUID.fromString("4412cc00-65de-43ff-b19a-10e0ec64cc4a"), "Gen_Deathrow"), 10));
+		//playersList.put("Gen_Deathrow", new PlayerSkinData(new GameProfile(UUID.fromString("4412cc00-65de-43ff-b19a-10e0ec64cc4a"), "Gen_Deathrow"), 10));
+
+		ItemStack cookie = new ItemStack(Items.COOKIE);
+		if(cookie.getTagCompound() == null) cookie.setTagCompound(new NBTTagCompound());
+		NBTTagCompound lore = new NBTTagCompound();
+		NBTTagList lore2 = new NBTTagList();
+		lore2.appendTag(new NBTTagString("Hear Have a cookie for your troubles"));
+		lore2.appendTag(new NBTTagString("Your Friend,"));
+		lore2.appendTag(new NBTTagString("GenDeathrow"));
+		lore.setTag("Lore", lore2);
+		cookie.getTagCompound().setTag("display", lore);
+
+		addNewPlayer("Gen_Deathrow", 10, cookie);
+		
 		playersList.put("Funwayguy", new PlayerSkinData(new GameProfile(UUID.fromString("c9ecb54c-6f87-485d-b0e1-0e7f8c777d56"), "Funwayguy"), 10));
 		playersList.put("Darkosto", new PlayerSkinData(new GameProfile(UUID.fromString("10755ea6-9721-467a-8b5c-92adf689072c"), "Darkosto"), 10));
 		playersList.put("Kashdeya", new PlayerSkinData(new GameProfile(UUID.fromString("e49c3c38-a516-4252-ba19-c2b24ff39987"), "Kashdeya"), 10));

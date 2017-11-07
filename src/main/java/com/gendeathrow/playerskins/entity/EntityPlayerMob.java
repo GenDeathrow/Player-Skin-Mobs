@@ -8,8 +8,9 @@ import javax.annotation.Nullable;
 
 import com.gendeathrow.playerskins.client.PlayerSkinManager;
 import com.gendeathrow.playerskins.core.ConfigHandler;
+import com.gendeathrow.playerskins.data.PlayerSkinData;
 import com.gendeathrow.playerskins.handlers.PlayerManager;
-import com.gendeathrow.playerskins.handlers.PlayerSkinData;
+import com.gendeathrow.playerskins.handlers.SpecialLootManager;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.Block;
@@ -29,6 +30,7 @@ import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
@@ -196,7 +198,7 @@ public class EntityPlayerMob extends EntityMob{
     }
 
     public GameProfile getPlayerProfile(){
-		return PlayerManager.getPlayerSkinProfile(this.getOwner());
+		return PlayerManager.getAddPlayerSkinProfile(this.getOwner());
     }
    
     // Handle Skins
@@ -412,23 +414,50 @@ public class EntityPlayerMob extends EntityMob{
     {
         boolean flag = super.attackEntityAsMob(entityIn);
 
-        if (flag)
-        {
+        if (flag) {
             float f = this.world.getDifficultyForLocation(new BlockPos(this)).getAdditionalDifficulty();
 
-            if (this.getHeldItemMainhand().isEmpty() && this.isBurning() && this.rand.nextFloat() < f * 0.3F)
-            {
+            if (this.getHeldItemMainhand().isEmpty() && this.isBurning() && this.rand.nextFloat() < f * 0.3F) {
                 entityIn.setFire(2 * (int)f);
             }
         }
-
         return flag;
     }
     
-    protected boolean canEquipItem(ItemStack stack)
-    {
+    protected boolean canEquipItem(ItemStack stack) {
         return stack.getItem() == Items.EGG && this.isChild() && this.isRiding() ? false : super.canEquipItem(stack);
     }
+    
+    @Override
+	public void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source)
+	{
+		if(source.getTrueSource() != null && source.getTrueSource() instanceof EntityPlayer)
+		{
+			double dropit = this.rand.nextDouble();
+			
+			if( dropit < (.025)) //lootingModifier*0.025 + 
+			{
+				ItemStack stack = new ItemStack(Items.SKULL, 1, 3);
+				
+				if(stack.getTagCompound() == null) stack.setTagCompound(new NBTTagCompound());
+
+				stack.getTagCompound().setString("SkullOwner", this.getOwner());
+
+				EntityItem skull = new EntityItem(world, this.posX, this.posY, this.posZ, stack);
+				
+				this.world.spawnEntity(skull);
+			}
+		}
+		
+		if(SpecialLootManager.hasLoot(this.getOwner())) {
+			SpecialLootManager.DropLoot(this, this.getOwner());
+			
+		}
+			
+
+		super.dropLoot(wasRecentlyHit, lootingModifier, source);
+	}
+	
     
 //    //TODO
     @Override

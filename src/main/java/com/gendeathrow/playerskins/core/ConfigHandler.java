@@ -36,6 +36,17 @@ public class ConfigHandler
 	public static float childSpawn;
 	public static boolean spawnersEnabled;
 	
+
+	public static void preInit()
+	{
+		File file = new File(configDir, "settings.cfg");
+		
+		config = new Configuration(file);
+		
+		config.load();
+		
+	}
+
 	public static void load()
 	{
 		PlayerSkinsCore.logger.log(Level.INFO, "Loading Configs...");
@@ -56,34 +67,26 @@ public class ConfigHandler
 
 		diminsionBlackList = dimBlackListProp.getIntList();
 	
-		spawnersEnabled = config.getBoolean("Enable Spawners", spawnerCat, true, "Will added Player Skins to the dungeons spawners List");
+		spawnersEnabled = config.getBoolean("Enable Spawners", spawnerCat, true, "Will add Player Skins to the dungeons spawners List");
 		playerSpawnerWeight = config.getInt("Mob Spawner Weight", spawnerCat, 200, 1, Integer.MAX_VALUE, "Changes dungeon spawner weight for PlayerMobs. \n Example is zombies are 200, where skeletons are 100. \n");
 		
 		
-		config.moveProperty(mobsCat, "Enable Nether", remove.getName());
-		config.moveProperty(mobsCat, "Enable The End", remove.getName());
-		config.removeCategory(remove);
-		
+		removeProperties();
 		if(config.hasChanged())
 			config.save();
 	}
 	
-	
-	public static void preInit()
-	{
-		File file = new File(configDir, "settings.cfg");
-		
-		config = new Configuration(file);
-		
-		config.load();
-		
-	}
-	
-	
 	public static void PostLoad()
 	{
 		PlayerManager.readPlayerSkinFile();
+	}
+	
 
+	private static void removeProperties()
+	{
+		config.moveProperty(mobsCat, "Enable Nether", remove.getName());
+		config.moveProperty(mobsCat, "Enable The End", remove.getName());
+		config.removeCategory(remove);
 	}
 	
 	

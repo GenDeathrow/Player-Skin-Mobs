@@ -60,7 +60,7 @@ public class ConfigHandler
 
 		childSpawn = config.getFloat("Baby Spawn Chance", mobsCat, net.minecraftforge.common.ForgeModContainer.zombieBabyChance, 0.01f, 1f, "Chance of Spawning a child player skined mob");
 		
-		biomeBlackList = new ArrayList<String>(Arrays.asList(config.getStringList("Biome BlackList", mobsCat, new String[]{} , "Add biomes to a blacklist to prevent spawning in that specifc biome. \n Use biomes names Example: \n ForestHills \n Birch Forest")));
+		biomeBlackList = new ArrayList<String>(Arrays.asList(config.getStringList("Biome BlackList", mobsCat, new String[]{} , "Add biomes to a blacklist to prevent spawning in that specifc biome. \n Use biomes registry names \n https://ftb.gamepedia.com/Mob_Settings/Biomes \n Example: \n minecraft:desert \n minecraft:extreme_hills")));
 
 		Property dimBlackListProp = config.get(mobsCat, "Dimension BlackList", diminsionBlackList);
 		dimBlackListProp.setComment("Blacklist certain dimensions (ID) from spawning player skinned mobs.");

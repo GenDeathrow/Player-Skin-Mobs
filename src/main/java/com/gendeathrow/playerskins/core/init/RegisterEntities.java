@@ -45,7 +45,7 @@ public class RegisterEntities {
     	
 	   	for (Biome biomeEntry : ForgeRegistries.BIOMES.getValues()) 
 	   	{
-	   		if(ConfigHandler.biomeBlackList.contains(biomeEntry.getBiomeName())) {
+	   		if(ConfigHandler.biomeBlackList.contains(biomeEntry.getRegistryName().toString())) {
 	   			blacklisted++;
 	   			continue;
 	   		}

@@ -19,7 +19,7 @@ public class PlayerSkinsCore
 {
     public static final String MODID = "playerskins";
     public static final String NAME = "Player Skins";
-    public static final String VERSION = "1.0.1";
+    public static final String VERSION = "1.0.2";
     public static final String CHANNELNAME = "genplayerskins";
     
 	@Instance(MODID)

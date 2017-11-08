@@ -128,6 +128,10 @@ public class PlayerManager
 	}
 	
 	
+	private static void addNewPlayer(String ownerName, int weight)
+	{
+		addNewPlayer(ownerName, weight, null);
+	}
 	
 	private static void addNewPlayer(String ownerName, int weight, ItemStack... stacks)
 	{
@@ -139,9 +143,10 @@ public class PlayerManager
 			 
 			 ArrayList<LootItem> drops = new ArrayList<LootItem>();
 			 
-			 for(ItemStack stack : stacks)
-				 if(stack != null && !stack.isEmpty())
-					 drops.add(new LootItem(stack));
+			 if(stacks != null)
+				 for(ItemStack stack : stacks)
+					 if(stack != null && !stack.isEmpty())
+						 drops.add(new LootItem(stack));
 			 
 			 
 			 if(!drops.isEmpty())
@@ -354,64 +359,100 @@ public class PlayerManager
 			e.printStackTrace();
 		}
 	}
-
-	public static void loadDefaults()
-	{
-		//cool kids
-		//playersList.put("Gen_Deathrow", new PlayerSkinData(new GameProfile(UUID.fromString("4412cc00-65de-43ff-b19a-10e0ec64cc4a"), "Gen_Deathrow"), 10));
-
-		ItemStack cookie = new ItemStack(Items.COOKIE);
-		if(cookie.getTagCompound() == null) cookie.setTagCompound(new NBTTagCompound());
+	
+	private static ItemStack addLore(ItemStack stack, String... strings) {
+		
+		if(stack.getTagCompound() == null) stack.setTagCompound(new NBTTagCompound());
 		NBTTagCompound lore = new NBTTagCompound();
 		NBTTagList lore2 = new NBTTagList();
-		lore2.appendTag(new NBTTagString("Hear Have a cookie for your troubles"));
-		lore2.appendTag(new NBTTagString("Your Friend,"));
-		lore2.appendTag(new NBTTagString("GenDeathrow"));
-		lore.setTag("Lore", lore2);
-		cookie.getTagCompound().setTag("display", lore);
-
-		addNewPlayer("Gen_Deathrow", 10, cookie);
 		
-		playersList.put("Funwayguy", new PlayerSkinData(new GameProfile(UUID.fromString("c9ecb54c-6f87-485d-b0e1-0e7f8c777d56"), "Funwayguy"), 10));
-		playersList.put("Darkosto", new PlayerSkinData(new GameProfile(UUID.fromString("10755ea6-9721-467a-8b5c-92adf689072c"), "Darkosto"), 10));
-		playersList.put("Kashdeya", new PlayerSkinData(new GameProfile(UUID.fromString("e49c3c38-a516-4252-ba19-c2b24ff39987"), "Kashdeya"), 10));
-		playersList.put("TheMattaBase", new PlayerSkinData(new GameProfile(UUID.fromString("44ba40ef-fd8a-446f-834b-5aea42119c92"), "TheMattaBase"), 10));
-		playersList.put("Jsl7", new PlayerSkinData(new GameProfile(UUID.fromString("94c04938-0f86-4960-a175-e3413a07fe8b"), "Jsl7"), 10));
-		playersList.put("Turkey2349", new PlayerSkinData(new GameProfile(UUID.fromString("276130dd-8c9a-4814-8328-2578f034e422"), "Turkey2349"), 10));
+		for(String string : strings)
+			lore2.appendTag(new NBTTagString(string));
+
+		lore.setTag("Lore", lore2);
+		stack.getTagCompound().setTag("display", lore);
+		
+		return stack;
+	}
+	
+	public static void loadDefaults()
+	{
+		addNewPlayer("Gen_Deathrow", 10, addLore(new ItemStack(Items.COOKIE), "Here have a cookie for your troubles.",  "Your Friend,", "   GenDeathrow"));
+		addNewPlayer("Funwayguy", 10);
+		addNewPlayer("Kashdeya", 10);
+		addNewPlayer("TheMattaBase", 10);
+		addNewPlayer("Jsl7", 10);
+		addNewPlayer("Turkey2349", 10);
 		
 		//invasion pack testers
-		playersList.put("Bacon_Donut", new PlayerSkinData(new GameProfile(UUID.fromString("024a0d05-3e3e-4ec5-b394-6e1a22d23fdc"), "Bacon_Donut"), 10));
-		playersList.put("SlothMonster_", new PlayerSkinData(new GameProfile(UUID.fromString("d2f772cb-80a4-47bd-820d-94b24bb3cccb"), "SlothMonster_"), 10));
-		playersList.put("GWSheridan", new PlayerSkinData(new GameProfile(UUID.fromString("84680660-1372-4890-9935-88272138173d"), "GWSheridan"), 10));
-		playersList.put("DatFailGamur", new PlayerSkinData(new GameProfile(UUID.fromString("29fa9b6c-8eb5-4544-87fb-5be8effbcf70"), "DatFailGamur"), 10));
-		playersList.put("darkphan", new PlayerSkinData(new GameProfile(UUID.fromString("cf1f2cfc-1a85-40a6-aaf4-a17355ac6579"), "darkphan"), 10));
-		playersList.put("SinfulDeity", new PlayerSkinData(new GameProfile(UUID.fromString("2ca3e953-c572-4c68-99b4-9d950fe7f580"), "SinfulDeity"), 10));
-		playersList.put("Gooderness", new PlayerSkinData(new GameProfile(UUID.fromString("de6721e7-23b4-42ec-95c0-e4c976c7fa85"), "Gooderness"), 10));
-		playersList.put("Vash505", new PlayerSkinData(new GameProfile(UUID.fromString("89215ee6-ae53-4d53-b524-86da50000a8f"), "Vash505"), 10));
+		addNewPlayer("GWSheridan", 10);
+		addNewPlayer("DatFailGamur", 10);
+		addNewPlayer("darkphan", 10);
+		addNewPlayer("SinfulDeity", 10);
+		
+		//Twitch Streamers
+		addNewPlayer("Bacon_Donut", 10);
+		addNewPlayer("SlothMonster_", 10);
+		addNewPlayer("Gooderness", 10);
+		addNewPlayer("Vash505", 10);
+		addNewPlayer("Darkosto", 10, new ItemStack(Items.STICK).setStackDisplayName("Builders Wand"));
+		addNewPlayer("Sevadus", 10);
+		addNewPlayer("CrustyMustard", 10);
+		addNewPlayer("Wyld", 10);
+		addNewPlayer("GiantWaffle", 10);
+		addNewPlayer("Soaryn", 10);
+		addNewPlayer("ZeldoKavira", 10);
 		
 		//forge
-		playersList.put("LexManos",  new PlayerSkinData(new GameProfile(UUID.fromString("d3cf097a-438f-4523-b770-ec11e13ecc32"), "LexManos"), 10));
-		playersList.put("cpw11",  new PlayerSkinData(new GameProfile(UUID.fromString("59af7399-5544-4990-81f1-c8f2263b00e5"), "cpw11"), 10));
+		addNewPlayer("LexManos", 10);
+		addNewPlayer("cpw11", 10);
 		
 		//modders
-		playersList.put("ganymedes01",  new PlayerSkinData(new GameProfile(UUID.fromString("539c3716-ce9a-4ba5-9721-310e755abe5c"), "ganymedes01"), 10));
-		playersList.put("iChun",  new PlayerSkinData(new GameProfile(UUID.fromString("0b7509f0-2458-4160-9ce1-2772b9a45ac2"), "iChun"), 10));
+		addNewPlayer("ganymedes01", 10);
+		addNewPlayer("iChun", 10);
+		addNewPlayer("KingLemming", 10);
+		addNewPlayer("ProfMobius", 10);
+		addNewPlayer("Sacheverell", 10);
+		addNewPlayer("Pahimar", 10);
+		addNewPlayer("Vazkii", 10);
+		addNewPlayer("FatherToast", 10);
+		addNewPlayer("vadis365", 10);
+		addNewPlayer("PurpleMentat", 10);
 		
 		//youtubers
-		playersList.put("direwolf20",  new PlayerSkinData(new GameProfile(UUID.fromString("bbb87dbe-690f-4205-bdc5-72ffb8ebc29d"), "direwolf20"), 10));
+		addNewPlayer("direwolf20", 10);
+		addNewPlayer("ChimneySwift", 10);
+		addNewPlayer("Sjin", 10);
+		addNewPlayer("Xephos", 10);
+		addNewPlayer("CaptainSparklez", 10);
+		addNewPlayer("DanTDM", 10);
+		addNewPlayer("Etho", 10);
+		addNewPlayer("SethBling", 10);
+		addNewPlayer("WayofFlowingTime", 10);
+		
+
+		
+		
+		//pack dev
+		addNewPlayer("Kehaan", 10);
+
+		
+		
 		
 		//ftb
-		playersList.put("tfox83",  new PlayerSkinData(new GameProfile(UUID.fromString("0e205074-25d8-4703-b989-8323b1a35faa"), "tfox83"), 10));
-		playersList.put("slowpoke101",  new PlayerSkinData(new GameProfile(UUID.fromString("d2839efc-727a-4263-97ce-3c73cdee5013"), "slowpoke101"), 10));
+		addNewPlayer("tfox83", 10);
+		addNewPlayer("slowpoke101", 10);
 		
 		//mojang
-		playersList.put("Notch",  new PlayerSkinData(new GameProfile(UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5"), "Notch"), 10));
-		playersList.put("jeb_",  new PlayerSkinData(new GameProfile(UUID.fromString("853c80ef-3c37-49fd-aa49-938b674adae6"), "jeb_"), 10));
-		playersList.put("EvilSeph",  new PlayerSkinData(new GameProfile(UUID.fromString("020242a1-7b94-4179-9eff-511eea1221da"), "EvilSeph"), 10));
-		playersList.put("C418",  new PlayerSkinData(new GameProfile(UUID.fromString("0b8b2245-8018-456c-945d-4282121e1b1e"), "C418"), 10));
-		//raidersList.put("Dinnerbone",  new RaiderData(new GameProfile(null, "Dinnerbone"), 10));
-		playersList.put("carnalizer",  new PlayerSkinData(new GameProfile(UUID.fromString("f96f3d63-fc7f-46a7-9643-86eb0b3d66cb"), "carnalizer"), 10));
-		//raidersList.put("Grumm",  new RaiderData(new GameProfile(null, "Grumm"), 10));
+		addNewPlayer("Notch", 10);
+		addNewPlayer("jeb_", 10);
+		addNewPlayer("EvilSeph", 10);
+		addNewPlayer("C418", 10);
+		addNewPlayer("Dinnerbone", 10);
+		addNewPlayer("carnalizer", 10);
+		addNewPlayer("Grumm", 10);
+		addNewPlayer("Searge_DP", 10);
+		addNewPlayer("TheMogMiner", 10);
 	}
 
 

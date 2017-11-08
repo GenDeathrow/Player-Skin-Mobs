@@ -43,7 +43,7 @@ public class LootItem {
 	public LootItem(ItemStack stackIn){
 		itemID = stackIn.getItem().getRegistryName().toString();
 		metaID = stackIn.getMetadata();
-		chance = 0.5d;
+		chance = 0.20d;
 		qty = stackIn.getCount();
 		stack = stackIn;
 		nbtData = stackIn.hasTagCompound() ?  stackIn.getTagCompound() : null;

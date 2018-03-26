@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 
 import com.gendeathrow.playerskins.client.PlayerSkinManager;
 import com.gendeathrow.playerskins.core.ConfigHandler;
+import com.gendeathrow.playerskins.core.init.RegisterEntities;
 import com.gendeathrow.playerskins.data.PlayerSkinData;
 import com.gendeathrow.playerskins.handlers.PlayerManager;
 import com.gendeathrow.playerskins.handlers.SpecialLootManager;
@@ -147,6 +148,13 @@ public class EntityPlayerMob extends EntityMob{
         }
     }
     
+    @Override
+    @Nullable
+    protected ResourceLocation getLootTable()
+    {
+        return RegisterEntities.playerSkinLoot;
+    }
+    
     public boolean isChild()
     {
         return ((Boolean)this.getDataManager().get(IS_CHILD)).booleanValue();
@@ -187,6 +195,7 @@ public class EntityPlayerMob extends EntityMob{
         this.setChildSize(childZombie);
     }
 
+    @Override
     public void notifyDataManagerChange(DataParameter<?> key)
     {
         if (IS_CHILD.equals(key))

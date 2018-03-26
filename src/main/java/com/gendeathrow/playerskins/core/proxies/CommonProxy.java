@@ -1,5 +1,7 @@
 package com.gendeathrow.playerskins.core.proxies;
 
+import com.gendeathrow.playerskins.core.init.RegisterEntities;
+
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -36,7 +38,7 @@ public class CommonProxy
 	
 	public void Init(FMLInitializationEvent event) 
 	{
-		
+		RegisterEntities.RegisterLootTables();
 	}
 	public void postInit(FMLPostInitializationEvent event) 
 	{

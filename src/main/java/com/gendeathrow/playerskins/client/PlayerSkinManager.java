@@ -21,8 +21,6 @@ import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
@@ -72,18 +70,7 @@ public class PlayerSkinManager
 					while (!raidersdata.isEmpty()) 
 					{
 						PlayerSkinData raider = raidersdata.get(0);
-
-						boolean uuidWasEmpty = false;
-						
-//						if(raider.getProfile().getId() == null)
-//							uuidWasEmpty = true;
-						
 						raider.setProfile(TileEntitySkull.updateGameprofile(raider.getProfile()));
-						
-//						// If UUID was empty than make raiders to update
-//						if(uuidWasEmpty && raider.getProfile().getId() != null)
-//							PlayerManager.markDirty();
-
 						raider.setProfileUpdated();
 						
 						try 
@@ -142,17 +129,6 @@ public class PlayerSkinManager
 		}
  		return resourcelocation;
     	
-    }
-	
-	
-    static boolean hasCheckedSkins = false;
-    @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-
-    	if(!hasCheckedSkins){
-    		hasCheckedSkins = true;
-    		//cacheSkins();
-    	}
     }
 	
 }

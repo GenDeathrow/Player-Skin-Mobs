@@ -13,6 +13,7 @@ import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.SpawnListEntry;
+import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.DungeonHooks;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -24,8 +25,14 @@ public class RegisterEntities {
 	
 	static int nextID = 1;
 	
+	public static ResourceLocation playerSkinLoot = new ResourceLocation(PlayerSkinsCore.MODID, "entities/skinloot");
+	
 	public static void register() {
 	  	EntityRegistry.registerModEntity(new ResourceLocation(PlayerSkinsCore.MODID, "playermob"), EntityPlayerMob.class, "playermob", 1, PlayerSkinsCore.instance, 80, 3, true, -3971048, 15677239);
+	}
+	
+	public static void RegisterLootTables() {
+		LootTableList.register(playerSkinLoot);
 	}
 	
 	@SideOnly(Side.CLIENT)
